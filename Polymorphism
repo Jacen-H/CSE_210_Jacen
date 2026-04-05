@@ -1,0 +1,21 @@
+class Animal:
+    def speak(self):
+        print("Some generic sound")
+
+class Dog(Animal):
+    def speak(self):
+        print("Woof")
+
+class Cat(Animal):
+    def speak(self):
+        print("Meow")
+
+class Cow(Animal):
+    def speak(self):
+        print("Moo")
+
+# Polymorphism in action
+animals = [Dog(), Cat(), Cow()]
+
+for animal in animals:
+    animal.speak()
