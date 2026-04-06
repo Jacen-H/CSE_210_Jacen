@@ -1,21 +1,86 @@
-class BankAccount:
-    def __init__(self, owner, balance):
-        self.owner = owner
-        self.__balance = balance 
+class Address:
+    def __init__(self, street, city, state, country):
+        self.__street = street
+        self.__city = city
+        self.__state = state
+        self.__country = country
 
-    def get_balance(self):
-        return f"Current balance: ${self.__balance}"
+    def is_usa(self):
+        return self.__country.lower() == "usa"
 
-    def deposit(self, amount):
-        if amount > 0:
-            self.__balance += amount
-            print(f"Deposited ${amount}")
-        else:
-            print("Error: You can't deposit a negative amount!")
+    def get_full_address(self):
+        return f"{self.__street}\n{self.__city}, {self.__state}\n{self.__country}"
 
-account = BankAccount("Alice", 500)
+class Customer:
+    def __init__(self, name, address):
+        self.__name = name
+        self.__address = address # This is an Address object
 
-account.__balance = 1000000 
+    def lives_in_usa(self):
+        # Encapsulation: Customer asks the Address for this info
+        return self.__address.is_usa()
 
-account.deposit(100)
-print(account.get_balance())
+    def get_name(self):
+        return self.__name
+
+    def get_address(self):
+        return self.__address.get_full_address()
+
+class Product:
+    def __init__(self, name, product_id, price, quantity):
+        self.__name = name
+        self.__product_id = product_id
+        self.__price = price
+        self.__quantity = quantity
+
+    def get_total_cost(self):
+        return self.__price * self.__quantity
+
+    def get_details(self):
+        return f"{self.__name} (ID: {self.__product_id})"
+
+class Order:
+    def __init__(self, customer):
+        self.__products = []
+        self.__customer = customer
+
+    def add_product(self, product):
+        self.__products.append(product)
+
+    def calculate_total_price(self):
+        subtotal = sum(p.get_total_cost() for p in self.__products)
+        shipping = 5 if self.__customer.lives_in_usa() else 35
+        return subtotal + shipping
+
+    def get_packing_label(self):
+        label = "Packing Label:\n"
+        for p in self.__products:
+            label += f"- {p.get_details()}\n"
+        return label
+
+    def get_shipping_label(self):
+        return f"Shipping Label:\n{self.__customer.get_name()}\n{self.__customer.get_address()}"
+
+def main():
+    addr1 = Address("123 Maple St", "Rexburg", "ID", "USA")
+    cust1 = Customer("Jacen Haws", addr1)
+    order1 = Order(cust1)
+    order1.add_product(Product("Mechanical Keyboard", "KBD-100", 85.00, 1))
+    order1.add_product(Product("USB-C Cable", "CBL-05", 12.50, 2))
+
+    addr2 = Address("456 Sakura Rd", "Kyoto", "Kyoto", "Japan")
+    cust2 = Customer("Hiro Tanaka", addr2)
+    order2 = Order(cust2)
+    order2.add_product(Product("Gaming Mouse", "MSE-99", 45.00, 1))
+    order2.add_product(Product("Large Mousepad", "PAD-01", 20.00, 1))
+
+    orders = [order1, order2]
+    for i, order in enumerate(orders, 1):
+        print(f"--- ORDER {i} ---")
+        print(order.get_packing_label())
+        print(order.get_shipping_label())
+        print(f"Total Price: ${order.calculate_total_price():.2f}")
+        print("\n")
+
+if __name__ == "__main__":
+    main()
