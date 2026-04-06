@@ -1,21 +1,78 @@
-class Animal:
-    def speak(self):
-        print("Some generic sound")
+from abc import ABC, abstractmethod
 
-class Dog(Animal):
-    def speak(self):
-        print("Woof")
+class Activity(ABC):
+    def __init__(self, date, minutes):
+        self.__date = date
+        self.__minutes = minutes
 
-class Cat(Animal):
-    def speak(self):
-        print("Meow")
+    def get_minutes(self):
+        return self.__minutes
 
-class Cow(Animal):
-    def speak(self):
-        print("Moo")
+    def get_date(self):
+        return self.__date
 
-# Polymorphism in action
-animals = [Dog(), Cat(), Cow()]
+    @abstractmethod
+    def get_distance(self):
+        """Must be overridden by subclasses"""
+        pass
 
-for animal in animals:
-    animal.speak()
+    def get_speed(self):
+        # Speed (kph) = (distance / minutes) * 60
+        return (self.get_distance() / self.__minutes) * 60
+
+    def get_pace(self):
+        # Pace (min per km) = minutes / distance
+        return self.__minutes / self.get_distance()
+
+    def get_summary(self):
+        return (f"{self.__date} {type(self).__name__} ({self.__minutes} min): "
+                f"Distance {self.get_distance():.1f} km, "
+                f"Speed: {self.get_speed():.1f} kph, "
+                f"Pace: {self.get_pace():.2f} min per km")
+
+# --- Subclasses ---
+
+class Running(Activity):
+    def __init__(self, date, minutes, distance_km):
+        super().__init__(date, minutes)
+        self.__distance = distance_km
+
+    def get_distance(self):
+        return self.__distance
+
+class Cycling(Activity):
+    def __init__(self, date, minutes, speed_kph):
+        super().__init__(date, minutes)
+        self.__speed = speed_kph
+
+    def get_distance(self):
+        # Distance = (speed * minutes) / 60
+        return (self.__speed * self.get_minutes()) / 60
+    
+    # Override get_speed because we already have it stored
+    def get_speed(self):
+        return self.__speed
+
+class Swimming(Activity):
+    def __init__(self, date, minutes, laps):
+        super().__init__(date, minutes)
+        self.__laps = laps
+
+    def get_distance(self):
+        # Distance (km) = swimming laps * 50 / 1000
+        return self.__laps * 50 / 1000
+
+def main():
+    run = Running("05 Apr 2026", 30, 4.8)
+    bike = Cycling("06 Apr 2026", 45, 25.0)
+    swim = Swimming("06 Apr 2026", 40, 40) # 40 laps * 50m = 2km
+
+    activities = [run, bike, swim]
+
+    print("FITNESS TRACKER SUMMARY\n" + "="*25)
+    
+    for activity in activities:
+        print(activity.get_summary())
+
+if __name__ == "__main__":
+    main()
