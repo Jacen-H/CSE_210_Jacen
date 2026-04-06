@@ -26,7 +26,6 @@ class Event:
         # type(self).__name__ dynamically gets the class name (e.g., 'Lecture')
         return f"{type(self).__name__}: {self.__title} on {self.__date}"
 
-    # Getters for subclasses to use since variables are private
     def _get_base_details(self):
         return self.get_standard_details()
 
@@ -63,12 +62,10 @@ class OutdoorGathering(Event):
                 f"Weather Forecast: {self.__weather}")
 
 def main():
-    # Setup addresses
     addr1 = Address("123 University Way", "Rexburg", "ID", "83440")
     addr2 = Address("456 Grand Ballroom St", "Salt Lake City", "UT", "84101")
     addr3 = Address("789 Porter Park", "Rexburg", "ID", "83440")
 
-    # Create one of each event type
     lecture = Lecture("AI in 2026", "A deep dive into neural networks.", 
                       "May 10", "10:00 AM", addr1, "Dr. Aris Thorne", 200)
     
