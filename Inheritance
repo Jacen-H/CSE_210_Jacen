@@ -1,20 +1,94 @@
-class Animal:
-    def __init__(self, name):
-        self.name = name
+class Address:
+    def __init__(self, street, city, state, zip_code):
+        self.__street = street
+        self.__city = city
+        self.__state = state
+        self.__zip = zip_code
 
-    def speak(self):
-        print("The animal makes a sound.")
+    def get_full_address(self):
+        return f"{self.__street}, {self.__city}, {self.__state} {self.__zip}"
 
-class Dog(Animal):
-    def speak(self):
-        print(self.name + " says: Woof!")
+class Event:
+    def __init__(self, title, description, date, time, address):
+        self.__title = title
+        self.__description = description
+        self.__date = date
+        self.__time = time
+        self.__address = address # Address object
 
-class Cat(Animal):
-    def speak(self):
-        print(self.name + " says: Meow!")
+    def get_standard_details(self):
+        return (f"Event: {self.__title}\n"
+                f"Description: {self.__description}\n"
+                f"Date: {self.__date} | Time: {self.__time}\n"
+                f"Location: {self.__address.get_full_address()}")
 
-dog1 = Dog("Buddy")
-cat1 = Cat("Whiskers")
+    def get_short_description(self):
+        # type(self).__name__ dynamically gets the class name (e.g., 'Lecture')
+        return f"{type(self).__name__}: {self.__title} on {self.__date}"
 
-dog1.speak()
-cat1.speak()
+    # Getters for subclasses to use since variables are private
+    def _get_base_details(self):
+        return self.get_standard_details()
+
+class Lecture(Event):
+    def __init__(self, title, description, date, time, address, speaker, capacity):
+        super().__init__(title, description, date, time, address)
+        self.__speaker = speaker
+        self.__capacity = capacity
+
+    def get_full_details(self):
+        return (f"{self._get_base_details()}\n"
+                f"Type: Lecture\n"
+                f"Speaker: {self.__speaker}\n"
+                f"Capacity: {self.__capacity} seats")
+
+class Reception(Event):
+    def __init__(self, title, description, date, time, address, rsvp_email):
+        super().__init__(title, description, date, time, address)
+        self.__rsvp_email = rsvp_email
+
+    def get_full_details(self):
+        return (f"{self._get_base_details()}\n"
+                f"Type: Reception\n"
+                f"RSVP at: {self.__rsvp_email}")
+
+class OutdoorGathering(Event):
+    def __init__(self, title, description, date, time, address, weather_statement):
+        super().__init__(title, description, date, time, address)
+        self.__weather = weather_statement
+
+    def get_full_details(self):
+        return (f"{self._get_base_details()}\n"
+                f"Type: Outdoor Gathering\n"
+                f"Weather Forecast: {self.__weather}")
+
+def main():
+    # Setup addresses
+    addr1 = Address("123 University Way", "Rexburg", "ID", "83440")
+    addr2 = Address("456 Grand Ballroom St", "Salt Lake City", "UT", "84101")
+    addr3 = Address("789 Porter Park", "Rexburg", "ID", "83440")
+
+    # Create one of each event type
+    lecture = Lecture("AI in 2026", "A deep dive into neural networks.", 
+                      "May 10", "10:00 AM", addr1, "Dr. Aris Thorne", 200)
+    
+    reception = Reception("Tech Mixer", "Networking for local devs.", 
+                          "June 15", "6:00 PM", addr2, "rsvp@techmix.com")
+    
+    outdoor = OutdoorGathering("Community BBQ", "Annual summer kickoff.", 
+                               "July 4", "12:00 PM", addr3, "Sunny with a high of 85°F")
+
+    events = [lecture, reception, outdoor]
+
+    for event in events:
+        print("=" * 30)
+        print("SHORT DESCRIPTION:")
+        print(event.get_short_description())
+        print("\nSTANDARD DETAILS:")
+        print(event.get_standard_details())
+        print("\nFULL DETAILS:")
+        print(event.get_full_details())
+        print("=" * 30 + "\n")
+
+if __name__ == "__main__":
+    main()
